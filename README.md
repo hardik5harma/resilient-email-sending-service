@@ -33,9 +33,13 @@ npm start
 
 ## Testing with Postman
 
+### Base URLs
+- Local: `http://localhost:3000`
+- Render: `https://resilient-email-service.onrender.com`
+
 ### 1. Send Email
 ```
-POST http://localhost:3000/api/email
+POST {base_url}/api/email
 Content-Type: application/json
 
 Request Body:
@@ -55,7 +59,7 @@ Response (200 OK):
 
 ### 2. Check Email Status
 ```
-GET http://localhost:3000/api/email/{messageId}
+GET {base_url}/api/email/{messageId}
 
 Response (200 OK):
 {
@@ -74,7 +78,7 @@ Possible status values:
 
 ### 3. Health Check
 ```
-GET http://localhost:3000/health
+GET {base_url}/health
 
 Response (200 OK):
 {
@@ -85,7 +89,7 @@ Response (200 OK):
 
 ### 4. Debug Endpoint
 ```
-GET http://localhost:3000/api/debug/emails
+GET {base_url}/api/debug/emails
 
 Response (200 OK):
 {
