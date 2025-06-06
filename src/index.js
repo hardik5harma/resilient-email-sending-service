@@ -15,8 +15,14 @@ const emailService = new EmailService({
     resetTimeout: parseInt(process.env.RESET_TIMEOUT) || 60000
 });
 
-// Enable CORS for all routes
-app.use(cors());
+// Enable CORS for all routes with specific options
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+    maxAge: 86400 // 24 hours
+}));
 
 // Parse JSON bodies
 app.use(express.json());
@@ -25,7 +31,17 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
     swaggerOptions: {
         persistAuthorization: true,
-        tryItOutEnabled: true
+        tryItOutEnabled: true,
+        supportedSubmitMethods: ['get', 'post'],
+        docExpansion: 'list',
+        filter: true,
+        showCommonExtensions: true,
+        showExtensions: true,
+        showRequestDuration: true,
+        syntaxHighlight: {
+            activate: true,
+            theme: 'monokai'
+        }
     }
 }));
 
@@ -84,4 +100,5 @@ app.get('/health', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
+    logger.info(`API Documentation available at http://localhost:${PORT}/api-docs`);
 }); 
