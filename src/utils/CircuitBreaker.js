@@ -5,6 +5,7 @@ class CircuitBreaker {
         this.failures = 0;
         this.lastFailureTime = null;
         this.state = 'CLOSED'; // CLOSED, OPEN, HALF-OPEN
+        this.consecutiveFailures = 0;
     }
 
     async execute(fn) {
@@ -27,22 +28,29 @@ class CircuitBreaker {
     }
 
     onSuccess() {
+        if (this.state === 'HALF-OPEN') {
+            this.state = 'CLOSED';
+        }
+        this.consecutiveFailures = 0;
         this.failures = 0;
-        this.state = 'CLOSED';
     }
 
     onFailure() {
+        this.consecutiveFailures++;
         this.failures++;
         this.lastFailureTime = Date.now();
         
-        if (this.failures >= this.failureThreshold) {
+        if (this.state === 'HALF-OPEN' || this.consecutiveFailures >= this.failureThreshold) {
+            console.log(`Circuit breaker opening after ${this.consecutiveFailures} consecutive failures`);
             this.state = 'OPEN';
         }
     }
 
     shouldReset() {
         if (!this.lastFailureTime) return false;
-        return Date.now() - this.lastFailureTime >= this.resetTimeout;
+        const timeSinceLastFailure = Date.now() - this.lastFailureTime;
+        console.log(`Time since last failure: ${timeSinceLastFailure}ms, reset timeout: ${this.resetTimeout}ms`);
+        return timeSinceLastFailure >= this.resetTimeout;
     }
 
     getState() {

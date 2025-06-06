@@ -31,13 +31,10 @@ class EmailService {
         const emailId = uuidv4();
         const email = { ...emailData, id: emailId };
         
-        console.log('Sending email with ID:', emailId);
-        console.log('Email data:', email);
-        
-        // Check idempotency
-        if (this.sentEmails.has(emailId)) {
-            console.log('Email already sent:', emailId);
-            return this.sentEmails.get(emailId);
+        // Check idempotency using a hash of the email content
+        const emailHash = JSON.stringify({ to: emailData.to, subject: emailData.subject, body: emailData.body });
+        if (this.sentEmails.has(emailHash)) {
+            return this.sentEmails.get(emailHash);
         }
 
         this.statuses.set(emailId, {
@@ -49,23 +46,16 @@ class EmailService {
 
         try {
             const result = await this.sendWithRetry(email);
-            // Store using messageId instead of UUID
+            // Store both by hash and messageId for proper tracking
+            this.sentEmails.set(emailHash, result);
             this.sentEmails.set(result.messageId, result);
+            
             this.statuses.set(result.messageId, {
                 status: 'SUCCESS',
                 attempts: 1,
                 lastAttempt: new Date().toISOString(),
                 provider: result.provider
             });
-            console.log('Email sent successfully:', result.messageId, result);
-            
-            console.log('Current email statuses:', 
-                Array.from(this.statuses.entries()).map(([id, status]) => ({
-                    id,
-                    status: status.status,
-                    provider: status.provider
-                }))
-            );
             
             return result;
         } catch (error) {
@@ -106,6 +96,8 @@ class EmailService {
 
     updateStatus(emailId, status, provider = null, attempts = null) {
         const currentStatus = this.statuses.get(emailId);
+        if (!currentStatus) return;
+        
         const newStatus = {
             ...currentStatus,
             status,

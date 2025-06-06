@@ -3,12 +3,20 @@ require('dotenv').config();
 class MockEmailProvider {
     constructor(name, successRate = null) {
         this.name = name;
-        this.successRate = successRate || 
+        this.successRate = successRate ?? 
             (name === 'Provider1' ? 
                 parseFloat(process.env.PROVIDER1_SUCCESS_RATE) || 0.9 : 
                 parseFloat(process.env.PROVIDER2_SUCCESS_RATE) || 0.8);
         this.sentEmails = new Map();
         console.log(`Initialized ${name} with success rate: ${this.successRate}`);
+    }
+
+    setSuccessRate(rate) {
+        if (typeof rate !== 'number' || rate < 0 || rate > 1) {
+            throw new Error('Success rate must be a number between 0 and 1');
+        }
+        this.successRate = rate;
+        console.log(`${this.name} success rate updated to: ${rate}`);
     }
 
     async send(email) {
