@@ -35,14 +35,36 @@ module.exports = {
             EmailResponse: {
                 type: 'object',
                 properties: {
+                    success: {
+                        type: 'boolean',
+                        description: 'Whether the email was sent successfully'
+                    },
                     messageId: {
                         type: 'string',
                         description: 'Unique identifier for the email'
                     },
+                    provider: {
+                        type: 'string',
+                        description: 'Email provider used to send the email'
+                    }
+                }
+            },
+            EmailStatus: {
+                type: 'object',
+                properties: {
                     status: {
                         type: 'string',
-                        enum: ['pending', 'sent', 'failed'],
+                        enum: ['PENDING', 'SUCCESS', 'FAILED', 'RETRYING'],
                         description: 'Current status of the email'
+                    },
+                    attempts: {
+                        type: 'integer',
+                        description: 'Number of attempts made to send the email'
+                    },
+                    lastAttempt: {
+                        type: 'string',
+                        format: 'date-time',
+                        description: 'Timestamp of the last attempt'
                     },
                     provider: {
                         type: 'string',
@@ -139,7 +161,7 @@ module.exports = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/EmailResponse'
+                                    $ref: '#/components/schemas/EmailStatus'
                                 }
                             }
                         }
@@ -199,9 +221,26 @@ module.exports = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'array',
-                                    items: {
-                                        $ref: '#/components/schemas/EmailResponse'
+                                    type: 'object',
+                                    properties: {
+                                        sentEmails: {
+                                            type: 'array',
+                                            items: {
+                                                type: 'array',
+                                                items: {
+                                                    type: 'string'
+                                                }
+                                            }
+                                        },
+                                        statuses: {
+                                            type: 'array',
+                                            items: {
+                                                type: 'array',
+                                                items: {
+                                                    $ref: '#/components/schemas/EmailStatus'
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }

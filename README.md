@@ -39,6 +39,84 @@ Once the server is running, access the API documentation at:
 http://localhost:3000/api-docs
 ```
 
+## API Endpoints
+
+### Send Email
+```
+POST /api/email
+Content-Type: application/json
+
+{
+    "to": "recipient@example.com",
+    "subject": "Test Email",
+    "body": "Hello World"
+}
+
+Response:
+{
+    "success": true,
+    "messageId": "mock-1234567890-abc123",
+    "provider": "Provider1"
+}
+```
+
+### Check Email Status
+```
+GET /api/email/{messageId}
+
+Response:
+{
+    "status": "SUCCESS",
+    "attempts": 1,
+    "lastAttempt": "2024-01-01T12:00:00.000Z",
+    "provider": "Provider1"
+}
+```
+
+Possible status values:
+- `PENDING`: Email is queued for sending
+- `SUCCESS`: Email was sent successfully
+- `FAILED`: Email sending failed
+- `RETRYING`: Email is being retried with a different provider
+
+### Health Check
+```
+GET /health
+
+Response:
+{
+    "status": "healthy",
+    "timestamp": "2024-01-01T12:00:00.000Z"
+}
+```
+
+### Debug Endpoint
+```
+GET /api/debug/emails
+
+Response:
+{
+    "sentEmails": [...],
+    "statuses": [...]
+}
+```
+
+## Environment Variables
+
+Configure the service using these environment variables:
+
+```
+PORT=3000                    # Server port
+MAX_RETRIES=3               # Maximum number of retry attempts
+RETRY_DELAY=1000            # Base delay between retries (ms)
+MAX_REQUESTS_PER_MINUTE=60  # Rate limit per provider
+FAILURE_THRESHOLD=5         # Circuit breaker failure threshold
+RESET_TIMEOUT=60000         # Circuit breaker reset timeout (ms)
+PROVIDER1_SUCCESS_RATE=0.9  # Success rate for Provider1
+PROVIDER2_SUCCESS_RATE=0.8  # Success rate for Provider2
+LOG_LEVEL=info             # Logging level
+```
+
 ## Deployment
 
 ### Deploying to Render
@@ -58,87 +136,38 @@ http://localhost:3000/api-docs
    - Start Command: `npm start`
    - Plan: `Free`
 
-6. Add the following environment variables:
-   ```
-   PORT=3000
-   MAX_RETRIES=3
-   RETRY_DELAY=1000
-   MAX_REQUESTS_PER_MINUTE=60
-   FAILURE_THRESHOLD=5
-   RESET_TIMEOUT=60000
-   PROVIDER1_SUCCESS_RATE=0.9
-   PROVIDER2_SUCCESS_RATE=0.8
-   LOG_LEVEL=info
-   ```
+6. Add the environment variables listed above
 
 7. Click "Create Web Service"
-
-## API Endpoints
-
-### Send Email
-```
-POST /api/email
-Content-Type: application/json
-
-{
-    "to": "recipient@example.com",
-    "subject": "Test Email",
-    "body": "Hello World"
-}
-```
-
-### Check Email Status
-```
-GET /api/email/{messageId}
-```
-
-### Health Check
-```
-GET /health
-```
 
 ## Architecture
 
 The service is built with the following components:
 
 - `EmailService`: Main service class that orchestrates email sending
-- Mock Email Providers: Simulated email providers for testing
-- Rate Limiter: Controls the rate of email sending
-- Circuit Breaker: Prevents cascading failures
-- Queue System: Manages email sending requests
-- Swagger UI: API documentation
-- Winston Logger: Professional logging system
+- `MockEmailProvider`: Simulated email provider with configurable success rate
+- `RateLimiter`: Implements rate limiting per provider
+- `CircuitBreaker`: Implements circuit breaker pattern for fault tolerance
+- `Logger`: Winston-based logging system
 
-## Assumptions
+## Error Handling
 
-1. The service uses mock email providers instead of real ones
-2. Email sending is asynchronous
-3. Rate limits are configurable per provider
-4. Retry attempts are configurable
-5. Circuit breaker thresholds are configurable
+The service implements several error handling mechanisms:
 
-## Usage
-
-```javascript
-const emailService = new EmailService();
-
-// Send an email
-const result = await emailService.sendEmail({
-  to: 'recipient@example.com',
-  subject: 'Test Email',
-  body: 'Hello World'
-});
-```
+1. **Retry Logic**: Automatically retries failed emails with exponential backoff
+2. **Fallback Providers**: Switches to alternative providers on failure
+3. **Circuit Breaker**: Prevents overwhelming failing providers
+4. **Rate Limiting**: Prevents provider overload
+5. **Idempotency**: Prevents duplicate sends
 
 ## Testing
 
-The project includes comprehensive unit tests and integration tests. Run them using:
-
+Run the test suite:
 ```bash
 npm test
 ```
 
-For test coverage:
+Run tests with coverage:
 ```bash
 npm run test:coverage
 ```
