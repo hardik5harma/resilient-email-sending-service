@@ -1,10 +1,8 @@
 require('dotenv').config();
 const express = require('express');
-const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
 const EmailService = require('./EmailService');
 const logger = require('./utils/logger');
-const swaggerDocument = require('./swagger');
 
 const app = express();
 const emailService = new EmailService({
@@ -15,35 +13,9 @@ const emailService = new EmailService({
     resetTimeout: parseInt(process.env.RESET_TIMEOUT) || 60000
 });
 
-// Enable CORS for all routes with specific options
-app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: true,
-    maxAge: 86400 // 24 hours
-}));
-
-// Parse JSON bodies
+// Basic middleware
 app.use(express.json());
-
-// API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-    swaggerOptions: {
-        persistAuthorization: true,
-        tryItOutEnabled: true,
-        supportedSubmitMethods: ['get', 'post'],
-        docExpansion: 'list',
-        filter: true,
-        showCommonExtensions: true,
-        showExtensions: true,
-        showRequestDuration: true,
-        syntaxHighlight: {
-            activate: true,
-            theme: 'monokai'
-        }
-    }
-}));
+app.use(cors());
 
 // Debug endpoint to list all emails
 app.get('/api/debug/emails', (req, res) => {
@@ -100,5 +72,4 @@ app.get('/health', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
-    logger.info(`API Documentation available at http://localhost:${PORT}/api-docs`);
 }); 

@@ -12,7 +12,6 @@ A robust email sending service implementation with retry logic, fallback mechani
 - Circuit breaker pattern
 - Simple logging
 - Basic queue system
-- API Documentation with Swagger
 - Professional logging with Winston
 
 ## Setup
@@ -32,27 +31,21 @@ npm test
 npm start
 ```
 
-## API Documentation
+## Testing with Postman
 
-Once the server is running, access the API documentation at:
+### 1. Send Email
 ```
-http://localhost:3000/api-docs
-```
-
-## API Endpoints
-
-### Send Email
-```
-POST /api/email
+POST http://localhost:3000/api/email
 Content-Type: application/json
 
+Request Body:
 {
     "to": "recipient@example.com",
     "subject": "Test Email",
     "body": "Hello World"
 }
 
-Response:
+Response (200 OK):
 {
     "success": true,
     "messageId": "mock-1234567890-abc123",
@@ -60,11 +53,11 @@ Response:
 }
 ```
 
-### Check Email Status
+### 2. Check Email Status
 ```
-GET /api/email/{messageId}
+GET http://localhost:3000/api/email/{messageId}
 
-Response:
+Response (200 OK):
 {
     "status": "SUCCESS",
     "attempts": 1,
@@ -79,22 +72,22 @@ Possible status values:
 - `FAILED`: Email sending failed
 - `RETRYING`: Email is being retried with a different provider
 
-### Health Check
+### 3. Health Check
 ```
-GET /health
+GET http://localhost:3000/health
 
-Response:
+Response (200 OK):
 {
     "status": "healthy",
     "timestamp": "2024-01-01T12:00:00.000Z"
 }
 ```
 
-### Debug Endpoint
+### 4. Debug Endpoint
 ```
-GET /api/debug/emails
+GET http://localhost:3000/api/debug/emails
 
-Response:
+Response (200 OK):
 {
     "sentEmails": [...],
     "statuses": [...]
