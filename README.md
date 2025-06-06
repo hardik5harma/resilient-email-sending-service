@@ -35,7 +35,7 @@ npm start
 
 ### Base URLs
 - Local: `http://localhost:3000`
-- Render: `https://resilient-email-service.onrender.com`
+- Render: `https://resilient-email-sending-service-p55n.onrender.com`
 
 ### 1. Send Email
 ```
@@ -114,29 +114,6 @@ PROVIDER2_SUCCESS_RATE=0.8  # Success rate for Provider2
 LOG_LEVEL=info             # Logging level
 ```
 
-## Deployment
-
-### Deploying to Render
-
-1. Fork this repository to your GitHub account
-
-2. Go to [Render Dashboard](https://dashboard.render.com/)
-
-3. Click "New +" and select "Web Service"
-
-4. Connect your GitHub repository
-
-5. Configure the service:
-   - Name: `resilient-email-service`
-   - Environment: `Node`
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-   - Plan: `Free`
-
-6. Add the environment variables listed above
-
-7. Click "Create Web Service"
-
 ## Architecture
 
 The service is built with the following components:
@@ -174,11 +151,3 @@ npm run test:coverage
 Logs are stored in:
 - `error.log`: Contains error logs
 - `combined.log`: Contains all logs
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request 
