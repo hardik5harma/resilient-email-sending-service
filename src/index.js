@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
+const cors = require('cors');
 const EmailService = require('./EmailService');
 const logger = require('./utils/logger');
 const swaggerDocument = require('./swagger');
@@ -14,18 +15,19 @@ const emailService = new EmailService({
     resetTimeout: parseInt(process.env.RESET_TIMEOUT) || 60000
 });
 
-// Enable CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    next();
-});
+// Enable CORS for all routes
+app.use(cors());
+
+// Parse JSON bodies
+app.use(express.json());
 
 // API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+    swaggerOptions: {
+        persistAuthorization: true,
+        tryItOutEnabled: true
+    }
+}));
 
 // Debug endpoint to list all emails
 app.get('/api/debug/emails', (req, res) => {
