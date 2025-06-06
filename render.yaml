@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: resilient-email-service
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: MAX_RETRIES
+        value: 3
+      - key: RETRY_DELAY
+        value: 1000
+      - key: MAX_REQUESTS_PER_MINUTE
+        value: 60
+      - key: FAILURE_THRESHOLD
+        value: 5
+      - key: RESET_TIMEOUT
+        value: 60000
+      - key: PROVIDER1_SUCCESS_RATE
+        value: 0.9
+      - key: PROVIDER2_SUCCESS_RATE
+        value: 0.8
+      - key: LOG_LEVEL
+        value: info 

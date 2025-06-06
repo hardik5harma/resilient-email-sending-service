@@ -1,0 +1,27 @@
+{
+  "name": "resilient-email-service",
+  "version": "1.0.0",
+  "description": "A resilient email sending service with retry logic and fallback mechanisms",
+  "main": "src/EmailService.js",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.4"
+  }
+}

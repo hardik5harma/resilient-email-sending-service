@@ -1,0 +1,5 @@
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-06-05T17:13:10.729Z"}
+{"level":"info","message":"Received email request","subject":"Test Email","timestamp":"2025-06-05T17:13:32.782Z","to":"test@example.com"}
+{"level":"info","message":"Email sent successfully","messageId":"mock-1749143613557-ebnmncjuv","provider":"Provider1","timestamp":"2025-06-05T17:13:33.563Z"}
+{"emailId":"mock-1749143613557-ebnmncjuv","level":"info","message":"Checking status for email","timestamp":"2025-06-05T17:13:45.951Z"}
+{"emailId":"mock-1749143613557-ebnmncjuv","level":"info","message":"Found email status","status":{"attempts":1,"lastAttempt":"2025-06-05T17:13:33.559Z","provider":"Provider1","status":"SUCCESS"},"timestamp":"2025-06-05T17:13:45.953Z"}
